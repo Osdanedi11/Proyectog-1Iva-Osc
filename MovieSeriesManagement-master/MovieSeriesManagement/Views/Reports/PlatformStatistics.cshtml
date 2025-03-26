@@ -1,0 +1,97 @@
+﻿@model IEnumerable<MovieSeriesManagement.Models.ViewModels.PlatformStatisticsViewModel>
+@{
+    ViewData["Title"] = "Estadísticas por Plataforma";
+}
+
+<h1>Estadísticas por Plataforma</h1>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Distribución de Contenido por Plataforma</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="platformChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Tabla de Datos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Plataforma</th>
+                            <th>Cantidad</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var total = Model.Sum(p => p.Count);
+                        }
+                        @foreach (var item in Model)
+                        {
+                            var percentage = (item.Count * 100.0) / total;
+                            <tr>
+                                <td>@item.Platform</td>
+                                <td>@item.Count</td>
+                                <td>@percentage.ToString("F2")%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Datos para el gráfico
+            const labels = [@Html.Raw(string.Join(",", Model.Select(p => $"'{p.Platform}'")))];
+            const data = [@string.Join(",", Model.Select(p => p.Count))];
+
+            // Gráfico
+            const ctx = document.getElementById('platformChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Cantidad de contenido',
+                        data: data,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Distribución de Contenido por Plataforma'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,203 @@
+﻿@model IEnumerable<MovieSeriesManagement.Models.Entities.Content>
+@{
+    ViewData["Title"] = "Inicio";
+    var featuredContent = Model.FirstOrDefault();
+}
+
+@if (featuredContent != null)
+{
+    <div class="hero-section" style="background-image: url('@(string.IsNullOrEmpty(featuredContent.ImageUrl) ? "/images/placeholder.jpg" : featuredContent.ImageUrl)');">
+        <div class="hero-content">
+            <h1 class="hero-title">@featuredContent.Title</h1>
+            <p class="hero-description">@featuredContent.Description</p>
+            <div class="hero-buttons">
+                <a asp-controller="Content" asp-action="Details" asp-route-id="@featuredContent.Id" class="btn btn-primary">
+                    <i class="bi bi-play-fill"></i> Ver detalles
+                </a>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <form asp-controller="ViewingHistory" asp-action="Record" method="post" style="display: inline;">
+                        <input type="hidden" name="contentId" value="@featuredContent.Id" />
+                        <input type="hidden" name="progress" value="0" />
+                        <input type="hidden" name="completed" value="false" />
+                        <button type="submit" class="btn btn-secondary">
+                            <i class="bi bi-plus-lg"></i> Agregar a Mi Lista
+                        </button>
+                    </form>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+<div class="container-fluid px-4">
+    @if (User.Identity.IsAuthenticated)
+    {
+        <div class="content-row">
+            <h2>Recomendaciones para ti</h2>
+            <div class="content-slider">
+                <div class="slider-container">
+                    @foreach (var content in Model)
+                    {
+                        <div class="slider-item">
+                            <div class="content-card">
+                                @if (!string.IsNullOrEmpty(content.ImageUrl))
+                                {
+                                    <img src="@content.ImageUrl" class="content-card-img" alt="@content.Title">
+                                }
+                                else
+                                {
+                                    <img src="/images/placeholder.jpg" class="content-card-img" alt="@content.Title">
+                                }
+                                <div class="content-card-overlay">
+                                    <h5 class="content-card-title">@content.Title</h5>
+                                    <div class="content-card-meta">
+                                        <span class="badge bg-primary">@content.Type</span>
+                                        <span class="badge bg-secondary">@content.Genre</span>
+                                    </div>
+                                    <div class="content-card-buttons">
+                                        <a asp-controller="Content" asp-action="Details" asp-route-id="@content.Id" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-play-fill"></i>
+                                        </a>
+                                        <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                                            <input type="hidden" name="contentId" value="@content.Id" />
+                                            <input type="hidden" name="progress" value="0" />
+                                            <input type="hidden" name="completed" value="false" />
+                                            <button type="submit" class="btn btn-sm btn-secondary">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="content-row">
+        <h2>Películas populares</h2>
+        <div class="content-slider">
+            <div class="slider-container">
+                @foreach (var content in Model.Where(c => c.Type == MovieSeriesManagement.Models.Entities.ContentType.Movie).Take(10))
+                {
+                    <div class="slider-item">
+                        <div class="content-card">
+                            @if (!string.IsNullOrEmpty(content.ImageUrl))
+                            {
+                                <img src="@content.ImageUrl" class="content-card-img" alt="@content.Title">
+                            }
+                            else
+                            {
+                                <img src="/images/placeholder.jpg" class="content-card-img" alt="@content.Title">
+                            }
+                            <div class="content-card-overlay">
+                                <h5 class="content-card-title">@content.Title</h5>
+                                <div class="content-card-meta">
+                                    <span class="badge bg-primary">@content.Type</span>
+                                    <span class="badge bg-secondary">@content.Genre</span>
+                                </div>
+                                <div class="content-card-buttons">
+                                    <a asp-controller="Content" asp-action="Details" asp-route-id="@content.Id" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-play-fill"></i>
+                                    </a>
+                                    <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                                        <input type="hidden" name="contentId" value="@content.Id" />
+                                        <input type="hidden" name="progress" value="0" />
+                                        <input type="hidden" name="completed" value="false" />
+                                        <button type="submit" class="btn btn-sm btn-secondary">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="content-row">
+        <h2>Series destacadas</h2>
+        <div class="content-slider">
+            <div class="slider-container">
+                @foreach (var content in Model.Where(c => c.Type == MovieSeriesManagement.Models.Entities.ContentType.Series).Take(10))
+                {
+                    <div class="slider-item">
+                        <div class="content-card">
+                            @if (!string.IsNullOrEmpty(content.ImageUrl))
+                            {
+                                <img src="@content.ImageUrl" class="content-card-img" alt="@content.Title">
+                            }
+                            else
+                            {
+                                <img src="/images/placeholder.jpg" class="content-card-img" alt="@content.Title">
+                            }
+                            <div class="content-card-overlay">
+                                <h5 class="content-card-title">@content.Title</h5>
+                                <div class="content-card-meta">
+                                    <span class="badge bg-primary">@content.Type</span>
+                                    <span class="badge bg-secondary">@content.Genre</span>
+                                </div>
+                                <div class="content-card-buttons">
+                                    <a asp-controller="Content" asp-action="Details" asp-route-id="@content.Id" class="btn btn-sm btn-primary">
+                                        <i class="bi bi-play-fill"></i>
+                                    </a>
+                                    <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                                        <input type="hidden" name="contentId" value="@content.Id" />
+                                        <input type="hidden" name="progress" value="0" />
+                                        <input type="hidden" name="completed" value="false" />
+                                        <button type="submit" class="btn btn-sm btn-secondary">
+                                            <i class="bi bi-plus-lg"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Slider functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sliders = document.querySelectorAll('.slider-container');
+
+            sliders.forEach(slider => {
+                // Add scroll buttons to each slider
+                const sliderParent = slider.parentElement;
+                const controlsDiv = document.createElement('div');
+                controlsDiv.className = 'slider-controls';
+
+                const leftControl = document.createElement('div');
+                leftControl.className = 'slider-control slider-control-left';
+                leftControl.innerHTML = '<i class="bi bi-chevron-left"></i>';
+
+                const rightControl = document.createElement('div');
+                rightControl.className = 'slider-control slider-control-right';
+                rightControl.innerHTML = '<i class="bi bi-chevron-right"></i>';
+
+                controlsDiv.appendChild(leftControl);
+                controlsDiv.appendChild(rightControl);
+                sliderParent.appendChild(controlsDiv);
+
+                // Scroll functionality
+                leftControl.addEventListener('click', () => {
+                    slider.scrollBy({ left: -500, behavior: 'smooth' });
+                });
+
+                rightControl.addEventListener('click', () => {
+                    slider.scrollBy({ left: 500, behavior: 'smooth' });
+                });
+            });
+        });
+    </script>
+}
+

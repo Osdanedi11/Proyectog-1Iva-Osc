@@ -1,0 +1,66 @@
+﻿@model IEnumerable<MovieSeriesManagement.Models.ViewModels.UserViewModel>
+@{
+    ViewData["Title"] = "Gestión de Usuarios";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mb-4">Gestión de Usuarios</h1>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="bi bi-check-circle me-2"></i> @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i> @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <i class="bi bi-people me-1"></i>
+            Usuarios registrados
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>@Html.DisplayNameFor(model => model.Email)</th>
+                            <th>@Html.DisplayNameFor(model => model.FullName)</th>
+                            <th>@Html.DisplayNameFor(model => model.Roles)</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                <td>@Html.DisplayFor(modelItem => item.FullName)</td>
+                                <td>@Html.DisplayFor(modelItem => item.Roles)</td>
+                                <td>
+                                    <div class="btn-group">
+                                        <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-info">
+                                            <i class="bi bi-info-circle"></i>
+                                        </a>
+                                        <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-danger">
+                                            <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+

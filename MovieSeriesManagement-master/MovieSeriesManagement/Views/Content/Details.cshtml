@@ -1,0 +1,217 @@
+﻿@model MovieSeriesManagement.Models.Entities.Content
+@{
+    ViewData["Title"] = "Detalles - " + Model.Title;
+}
+
+<div class="content-details-header" style="background-image: url('@(string.IsNullOrEmpty(Model.ImageUrl) ? "/images/placeholder.jpg" : Model.ImageUrl)');">
+    <div class="content-details-info">
+        <h1 class="content-details-title">@Model.Title</h1>
+        <div class="content-details-meta">
+            <span class="badge bg-primary">@Model.Type</span>
+            <span class="badge bg-secondary">@Model.Genre</span>
+            <span class="badge bg-info">@Model.Platform</span>
+            <span class="text-light ms-2">@Model.ReleaseDate.ToString("yyyy")</span>
+        </div>
+        <p class="content-details-description">@Model.Description</p>
+        <div class="d-flex gap-2">
+            @if (User.Identity.IsAuthenticated)
+            {
+                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#watchModal">
+                    <i class="bi bi-play-fill"></i> Ver ahora
+                </button>
+                <form asp-controller="ViewingHistory" asp-action="Record" method="post" style="display: inline;">
+                    <input type="hidden" name="contentId" value="@Model.Id" />
+                    <input type="hidden" name="progress" value="0" />
+                    <input type="hidden" name="completed" value="false" />
+                    <button type="submit" class="btn btn-secondary">
+                        <i class="bi bi-plus-lg"></i> Agregar a Mi Lista
+                    </button>
+                </form>
+            }
+            else
+            {
+                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary">
+                    <i class="bi bi-play-fill"></i> Iniciar sesión para ver
+                </a>
+            }
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-outline-light">
+                    <i class="bi bi-pencil"></i> Editar
+                </a>
+                <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-outline-light">
+                    <i class="bi bi-trash"></i> Eliminar
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="container-fluid px-4">
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Detalles</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Título:</strong> @Model.Title</p>
+                            <p><strong>Género:</strong> @Model.Genre</p>
+                            <p><strong>Plataforma:</strong> @Model.Platform</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Tipo:</strong> @Model.Type</p>
+                            <p><strong>Fecha de lanzamiento:</strong> @Model.ReleaseDate.ToString("dd/MM/yyyy")</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (User.Identity.IsAuthenticated)
+        {
+            <div class="col-md-4">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5>Tu progreso</h5>
+                    </div>
+                    <div class="card-body">
+                        <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                            <input type="hidden" name="contentId" value="@Model.Id" />
+                            <div class="form-group mb-3">
+                                <label for="progress">Progreso (0-100%):</label>
+                                <input type="range" class="form-range" id="progress" name="progress" min="0" max="100" value="0" oninput="this.nextElementSibling.value = this.value">
+                                <output>0</output>%
+                            </div>
+                            <div class="form-check mb-3">
+                                <input class="form-check-input" type="checkbox" id="completed" name="completed">
+                                <label class="form-check-label" for="completed">
+                                    Completado
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Guardar progreso</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (ViewBag.SimilarContent != null && ((IEnumerable<MovieSeriesManagement.Models.Entities.Content>)ViewBag.SimilarContent).Any())
+    {
+        <div class="similar-content">
+            <h3>Contenido similar</h3>
+            <div class="content-slider">
+                <div class="slider-container">
+                    @foreach (var item in (IEnumerable<MovieSeriesManagement.Models.Entities.Content>)ViewBag.SimilarContent)
+                    {
+                        <div class="slider-item">
+                            <div class="content-card">
+                                @if (!string.IsNullOrEmpty(item.ImageUrl))
+                                {
+                                    <img src="@item.ImageUrl" class="content-card-img" alt="@item.Title">
+                                }
+                                else
+                                {
+                                    <img src="/images/placeholder.jpg" class="content-card-img" alt="@item.Title">
+                                }
+                                <div class="content-card-overlay">
+                                    <h5 class="content-card-title">@item.Title</h5>
+                                    <div class="content-card-meta">
+                                        <span class="badge bg-primary">@item.Type</span>
+                                        <span class="badge bg-secondary">@item.Genre</span>
+                                    </div>
+                                    <div class="content-card-buttons">
+                                        <a asp-controller="Content" asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                                            <i class="bi bi-play-fill"></i>
+                                        </a>
+                                        <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                                            <input type="hidden" name="contentId" value="@item.Id" />
+                                            <input type="hidden" name="progress" value="0" />
+                                            <input type="hidden" name="completed" value="false" />
+                                            <button type="submit" class="btn btn-sm btn-secondary">
+                                                <i class="bi bi-plus-lg"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Modal para "Ver ahora" -->
+<div class="modal fade" id="watchModal" tabindex="-1" aria-labelledby="watchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="watchModalLabel">Ver @Model.Title</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="ratio ratio-16x9">
+                    <div class="d-flex align-items-center justify-content-center bg-dark">
+                        <div class="text-center">
+                            <i class="bi bi-film" style="font-size: 4rem;"></i>
+                            <h4 class="mt-3">Reproductor no disponible en la versión de demostración</h4>
+                            <p>En una implementación real, aquí se mostraría el reproductor de video.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                    <input type="hidden" name="contentId" value="@Model.Id" />
+                    <input type="hidden" name="progress" value="100" />
+                    <input type="hidden" name="completed" value="true" />
+                    <button type="submit" class="btn btn-primary">Marcar como visto</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Slider functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const sliders = document.querySelectorAll('.slider-container');
+
+            sliders.forEach(slider => {
+                // Add scroll buttons to each slider
+                const sliderParent = slider.parentElement;
+                const controlsDiv = document.createElement('div');
+                controlsDiv.className = 'slider-controls';
+
+                const leftControl = document.createElement('div');
+                leftControl.className = 'slider-control slider-control-left';
+                leftControl.innerHTML = '<i class="bi bi-chevron-left"></i>';
+
+                const rightControl = document.createElement('div');
+                rightControl.className = 'slider-control slider-control-right';
+                rightControl.innerHTML = '<i class="bi bi-chevron-right"></i>';
+
+                controlsDiv.appendChild(leftControl);
+                controlsDiv.appendChild(rightControl);
+                sliderParent.appendChild(controlsDiv);
+
+                // Scroll functionality
+                leftControl.addEventListener('click', () => {
+                    slider.scrollBy({ left: -500, behavior: 'smooth' });
+                });
+
+                rightControl.addEventListener('click', () => {
+                    slider.scrollBy({ left: 500, behavior: 'smooth' });
+                });
+            });
+        });
+    </script>
+}
+

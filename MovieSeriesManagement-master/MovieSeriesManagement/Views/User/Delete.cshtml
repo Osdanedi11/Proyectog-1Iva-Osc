@@ -1,0 +1,39 @@
+﻿@model MovieSeriesManagement.Models.ViewModels.UserViewModel
+@{
+    ViewData["Title"] = "Eliminar Usuario";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mb-4">Eliminar Usuario</h1>
+
+    <div class="alert alert-danger">
+        <h3><i class="bi bi-exclamation-triangle me-2"></i> ¿Estás seguro de que deseas eliminar este usuario?</h3>
+        <p>Esta acción no se puede deshacer. Se eliminarán todos los datos asociados a este usuario, incluyendo su historial de visualización y recomendaciones.</p>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Información del usuario</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FullName)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.FullName)</dd>
+
+                <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Roles)</dt>
+                <dd class="col-sm-9">@Html.DisplayFor(model => model.Roles)</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+                <button type="submit" class="btn btn-danger float-end">Confirmar eliminación</button>
+            </form>
+        </div>
+    </div>
+</div>
+

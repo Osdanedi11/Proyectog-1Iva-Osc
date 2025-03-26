@@ -1,0 +1,125 @@
+﻿@model IEnumerable<MovieSeriesManagement.Models.ViewModels.MonthlyStatisticsViewModel>
+@{
+    ViewData["Title"] = "Estadísticas Mensuales";
+}
+
+<h1>Estadísticas Mensuales</h1>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Filtrar por período</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="MonthlyStatistics" method="get">
+                    <div class="row">
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="startDate">Fecha de inicio:</label>
+                                <input type="date" id="startDate" name="startDate" class="form-control" value="@ViewBag.StartDate" />
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="form-group">
+                                <label for="endDate">Fecha de fin:</label>
+                                <input type="date" id="endDate" name="endDate" class="form-control" value="@ViewBag.EndDate" />
+                            </div>
+                        </div>
+                        <div class="col-md-2 d-flex align-items-end">
+                            <button type="submit" class="btn btn-primary w-100">Filtrar</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Visualizaciones por Mes</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="monthlyChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Tabla de Datos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Mes</th>
+                            <th>Año</th>
+                            <th>Visualizaciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>@item.MonthName</td>
+                                <td>@item.Year</td>
+                                <td>@item.Count</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Datos para el gráfico
+            const labels = [@Html.Raw(string.Join(",", Model.Select(m => $"'{m.MonthName} {m.Year}'")))];
+            const data = [@string.Join(",", Model.Select(m => m.Count))];
+
+            // Gráfico
+            const ctx = document.getElementById('monthlyChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Visualizaciones por mes',
+                        data: data,
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        borderColor: 'rgba(75, 192, 192, 1)',
+                        borderWidth: 2,
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    },
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Tendencia de Visualizaciones Mensuales'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+

@@ -1,0 +1,65 @@
+﻿@model MovieSeriesManagement.Models.ViewModels.UserViewModel
+@{
+    ViewData["Title"] = "Detalles del Usuario";
+}
+
+<div class="container-fluid px-4">
+    <h1 class="mb-4">Detalles del Usuario</h1>
+
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Información del perfil</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.ProfilePictureUrl))
+                    {
+                        <img src="@Model.ProfilePictureUrl" alt="@Model.FullName" class="rounded-circle img-fluid mb-3" style="max-width: 150px;">
+                    }
+                    else
+                    {
+                        <div class="rounded-circle bg-secondary d-flex align-items-center justify-content-center mx-auto mb-3" style="width: 150px; height: 150px;">
+                            <i class="bi bi-person-fill text-white" style="font-size: 4rem;"></i>
+                        </div>
+                    }
+                    <h4>@Model.FullName</h4>
+                    <p class="text-muted">@Model.Email</p>
+                    <p>
+                        <span class="badge bg-primary">@Model.Roles</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Detalles de la cuenta</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Email)</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Email)</dd>
+
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.FirstName)</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.FirstName)</dd>
+
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.LastName)</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.LastName)</dd>
+
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.PhoneNumber)</dt>
+                        <dd class="col-sm-9">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "No especificado" : Model.PhoneNumber)</dd>
+
+                        <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Roles)</dt>
+                        <dd class="col-sm-9">@Html.DisplayFor(model => model.Roles)</dd>
+                    </dl>
+                </div>
+                <div class="card-footer">
+                    <a asp-action="Index" class="btn btn-secondary">Volver a la lista</a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger float-end">Eliminar usuario</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

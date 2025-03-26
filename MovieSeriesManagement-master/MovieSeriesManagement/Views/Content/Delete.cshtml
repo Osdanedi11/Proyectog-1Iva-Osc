@@ -1,0 +1,52 @@
+﻿@model MovieSeriesManagement.Models.Entities.Content
+@{
+    ViewData["Title"] = "Eliminar Contenido";
+}
+
+<h1>Eliminar Contenido</h1>
+
+<div class="alert alert-danger">
+    <h3>¿Estás seguro de que deseas eliminar este contenido?</h3>
+    <p>Esta acción no se puede deshacer.</p>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5>Detalles del contenido</h5>
+            </div>
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">Título</dt>
+                    <dd class="col-sm-8">@Model.Title</dd>
+
+                    <dt class="col-sm-4">Género</dt>
+                    <dd class="col-sm-8">@Model.Genre</dd>
+
+                    <dt class="col-sm-4">Plataforma</dt>
+                    <dd class="col-sm-8">@Model.Platform</dd>
+
+                    <dt class="col-sm-4">Tipo</dt>
+                    <dd class="col-sm-8">@Model.Type</dd>
+
+                    <dt class="col-sm-4">Fecha de lanzamiento</dt>
+                    <dd class="col-sm-8">@Model.ReleaseDate.ToString("dd/MM/yyyy")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        @if (!string.IsNullOrEmpty(Model.ImageUrl))
+        {
+            <img src="@Model.ImageUrl" class="img-fluid rounded" alt="@Model.Title">
+        }
+    </div>
+</div>
+
+<form asp-action="Delete" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Confirmar eliminación</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
+

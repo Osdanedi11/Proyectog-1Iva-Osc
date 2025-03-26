@@ -1,0 +1,38 @@
+﻿@page
+@model ConfirmEmailModel
+@{
+    ViewData["Title"] = "Confirmar correo electrónico";
+}
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h2>@ViewData["Title"]</h2>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-4">
+                        @if (Model.StatusMessage == "Error")
+                        {
+                            <div class="alert alert-danger">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                Ha ocurrido un error al confirmar tu correo electrónico.
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success">
+                                <i class="bi bi-check-circle-fill me-2"></i>
+                                ¡Gracias por confirmar tu correo electrónico!
+                            </div>
+                        }
+                    </div>
+
+                    <a class="btn btn-primary" asp-area="Identity" asp-page="/Account/Login">Ir a iniciar sesión</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

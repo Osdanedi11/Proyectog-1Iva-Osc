@@ -1,0 +1,132 @@
+﻿@model MovieSeriesManagement.Models.ViewModels.UserStatisticsViewModel
+@{
+    ViewData["Title"] = "Mis Estadísticas";
+}
+
+<h1>Mis Estadísticas de Visualización</h1>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Resumen</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <h2>@Model.TotalWatched</h2>
+                        <p>Total</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h2>@Model.MoviesWatched</h2>
+                        <p>Películas</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <h2>@Model.SeriesWatched</h2>
+                        <p>Series</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-8 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Distribución por Género</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="genreChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Distribución por Plataforma</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="platformChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Datos para el gráfico de géneros
+            const genreLabels = [@Html.Raw(string.Join(",", Model.GenreDistribution.Select(g => $"'{g.Genre}'")))];
+            const genreData = [@string.Join(",", Model.GenreDistribution.Select(g => g.Count))];
+            const genreColors = [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(199, 199, 199, 0.7)'
+            ];
+
+            // Gráfico de géneros
+            const genreCtx = document.getElementById('genreChart').getContext('2d');
+            new Chart(genreCtx, {
+                type: 'pie',
+                data: {
+                    labels: genreLabels,
+                    datasets: [{
+                        data: genreData,
+                        backgroundColor: genreColors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Géneros más vistos'
+                        }
+                    }
+                }
+            });
+
+            // Datos para el gráfico de plataformas
+            const platformLabels = [@Html.Raw(string.Join(",", Model.PlatformDistribution.Select(p => $"'{p.Platform}'")))];
+            const platformData = [@string.Join(",", Model.PlatformDistribution.Select(p => p.Count))];
+
+            // Gráfico de plataformas
+            const platformCtx = document.getElementById('platformChart').getContext('2d');
+            new Chart(platformCtx, {
+                type: 'bar',
+                data: {
+                    labels: platformLabels,
+                    datasets: [{
+                        label: 'Contenido visto por plataforma',
+                        data: platformData,
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                precision: 0
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+

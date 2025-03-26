@@ -1,0 +1,172 @@
+﻿@model Tuple<MovieSeriesManagement.Models.ViewModels.ContentSearchViewModel, IEnumerable<MovieSeriesManagement.Models.Entities.Content>>
+@{
+    ViewData["Title"] = "Catálogo";
+}
+
+<div class="container-fluid px-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Explora nuestro catálogo</h1>
+        @if (User.IsInRole("Admin"))
+        {
+            <a asp-action="Create" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Agregar contenido
+            </a>
+        }
+    </div>
+
+    @if (ViewBag.ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <i class="bi bi-exclamation-triangle me-2"></i> @ViewBag.ErrorMessage
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <form asp-action="Index" method="get">
+                <div class="row g-3">
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <input name="searchTerm" value="@Model.Item1.SearchTerm" class="form-control" id="searchTerm" placeholder="Buscar">
+                            <label for="searchTerm">Buscar</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select name="genre" class="form-select" id="genre">
+                                <option value="">Todos los géneros</option>
+                                @foreach (var genre in Model.Item1.Genres)
+                                {
+                                    @if (genre == Model.Item1.Genre)
+                                    {
+                                        <option value="@genre" selected>@genre</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@genre">@genre</option>
+                                    }
+                                }
+                            </select>
+                            <label for="genre">Género</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select name="platform" class="form-select" id="platform">
+                                <option value="">Todas las plataformas</option>
+                                @foreach (var platform in Model.Item1.Platforms)
+                                {
+                                    @if (platform == Model.Item1.Platform)
+                                    {
+                                        <option value="@platform" selected>@platform</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="@platform">@platform</option>
+                                    }
+                                }
+                            </select>
+                            <label for="platform">Plataforma</label>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-floating">
+                            <select name="contentType" class="form-select" id="contentType">
+                                <option value="">Todos los tipos</option>
+                                @if (Model.Item1.ContentType == MovieSeriesManagement.Models.Entities.ContentType.Movie)
+                                {
+                                    <option value="0" selected>Película</option>
+                                }
+                                else
+                                {
+                                    <option value="0">Película</option>
+                                }
+
+                                @if (Model.Item1.ContentType == MovieSeriesManagement.Models.Entities.ContentType.Series)
+                                {
+                                    <option value="1" selected>Serie</option>
+                                }
+                                else
+                                {
+                                    <option value="1">Serie</option>
+                                }
+                            </select>
+                            <label for="contentType">Tipo</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end mt-3">
+                    <button type="submit" class="btn btn-primary me-2">
+                        <i class="bi bi-search"></i> Buscar
+                    </button>
+                    <a asp-action="Index" class="btn btn-secondary">
+                        <i class="bi bi-x-circle"></i> Limpiar
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        @foreach (var item in Model.Item2)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="content-card h-100">
+                    @if (!string.IsNullOrEmpty(item.ImageUrl))
+                    {
+                        <img src="@item.ImageUrl" class="content-card-img" alt="@item.Title">
+                    }
+                    else
+                    {
+                        <img src="/images/placeholder.jpg" class="content-card-img" alt="@item.Title">
+                    }
+                    <div class="content-card-overlay">
+                        <h5 class="content-card-title">@item.Title</h5>
+                        <div class="content-card-meta">
+                            <span class="badge bg-primary">@item.Type</span>
+                            <span class="badge bg-secondary">@item.Genre</span>
+                            <span class="badge bg-info">@item.Platform</span>
+                        </div>
+                        <p class="small text-light mt-2">@(item.Description?.Length > 100 ? item.Description.Substring(0, 100) + "..." : item.Description)</p>
+                        <div class="content-card-buttons mt-2">
+                            <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-sm btn-primary">
+                                <i class="bi bi-play-fill"></i> Ver
+                            </a>
+                            @if (User.Identity.IsAuthenticated)
+                            {
+                                <form asp-controller="ViewingHistory" asp-action="Record" method="post">
+                                    <input type="hidden" name="contentId" value="@item.Id" />
+                                    <input type="hidden" name="progress" value="0" />
+                                    <input type="hidden" name="completed" value="false" />
+                                    <button type="submit" class="btn btn-sm btn-secondary">
+                                        <i class="bi bi-plus-lg"></i> Mi Lista
+                                    </button>
+                                </form>
+                            }
+                            @if (User.IsInRole("Admin"))
+                            {
+                                <div class="btn-group mt-2">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light">
+                                        <i class="bi bi-pencil"></i>
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light">
+                                        <i class="bi bi-trash"></i>
+                                    </a>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if (!Model.Item2.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i> No se encontraron resultados para tu búsqueda. Intenta con otros criterios.
+        </div>
+    }
+</div>
+

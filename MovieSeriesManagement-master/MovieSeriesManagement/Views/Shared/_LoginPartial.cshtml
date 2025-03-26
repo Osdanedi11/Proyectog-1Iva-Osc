@@ -1,0 +1,45 @@
+﻿@using Microsoft.AspNetCore.Identity
+@inject SignInManager<MovieSeriesManagement.Models.Entities.ApplicationUser> SignInManager
+@inject UserManager<MovieSeriesManagement.Models.Entities.ApplicationUser> UserManager
+
+<ul class="navbar-nav">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                @{
+                    var user = await UserManager.GetUserAsync(User);
+                    var displayName = user != null ? $"{user.FirstName} {user.LastName}" : User.Identity?.Name;
+                }
+                <span class="me-1">@displayName</span>
+                @if (user != null && !string.IsNullOrEmpty(user.ProfilePictureUrl))
+                {
+                    <img src="@user.ProfilePictureUrl" alt="Profile" class="rounded-circle" width="24" height="24" />
+                }
+                else
+                {
+                    <i class="bi bi-person-circle"></i>
+                }
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-dark" aria-labelledby="userDropdown">
+                <li><a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">Mi Perfil</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li>
+                    <form class="form-inline" asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="@Url.Action("Index", "Home", new { area = "" })">
+                        <button type="submit" class="dropdown-item">Cerrar sesión</button>
+                    </form>
+                </li>
+            </ul>
+        </li>
+    }
+    else
+    {
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Register">Registrarse</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" asp-area="Identity" asp-page="/Account/Login">Iniciar sesión</a>
+        </li>
+    }
+</ul>
+

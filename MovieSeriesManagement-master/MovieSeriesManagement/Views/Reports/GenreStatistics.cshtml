@@ -1,0 +1,102 @@
+﻿@model IEnumerable<MovieSeriesManagement.Models.ViewModels.GenreStatisticsViewModel>
+@{
+    ViewData["Title"] = "Estadísticas por Género";
+}
+
+<h1>Estadísticas por Género</h1>
+
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Distribución de Contenido por Género</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="genreChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5>Tabla de Datos</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Género</th>
+                            <th>Cantidad</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            var total = Model.Sum(g => g.Count);
+                        }
+                        @foreach (var item in Model)
+                        {
+                            var percentage = (item.Count * 100.0) / total;
+                            <tr>
+                                <td>@item.Genre</td>
+                                <td>@item.Count</td>
+                                <td>@percentage.ToString("F2")%</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Datos para el gráfico
+            const labels = [@Html.Raw(string.Join(",", Model.Select(g => $"'{g.Genre}'")))];
+            const data = [@string.Join(",", Model.Select(g => g.Count))];
+            const colors = [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)',
+                'rgba(255, 159, 64, 0.7)',
+                'rgba(199, 199, 199, 0.7)',
+                'rgba(83, 102, 255, 0.7)',
+                'rgba(255, 99, 255, 0.7)',
+                'rgba(99, 255, 132, 0.7)'
+            ];
+
+            // Gráfico
+            const ctx = document.getElementById('genreChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: data,
+                        backgroundColor: colors,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        title: {
+                            display: true,
+                            text: 'Distribución de Contenido por Género'
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}
+
